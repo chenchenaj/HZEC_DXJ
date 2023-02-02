@@ -1,0 +1,251 @@
+<template>
+	<view class="flex_c_s content">
+		<image class='full_fix' src="../../static/login/login_bg.png" mode="aspectFill"></image>
+		<view style="margin-top: 69rpx; font-size: 31rpx; z-index: 10;color: #fff;">登录</view>
+		<image class="logo" src="../../static/login/logo.png" mode="aspectFill"></image>
+		<view class="title">点巡检管理系统</view>
+		<view class="tel flex_r_b">
+			<image src="../../static/login/username.png" mode="aspectFit" class="tel_icon"></image>
+			<input type="text" :value="username" placeholder-style="color:#fff" placeholder="请输入用户名" class="input" @input="inputName" />
+			<image src="../../static/login/clear.png" mode="aspectFill" class="close" @click="clear"></image>
+		</view>
+		<view style="width: 610rpx;background-color: #fff;height: 1rpx;z-index: 10; margin-top: 20rpx;"></view>
+		<view class="tel flex_r_b" style="margin-top: 87rpx;">
+			<image src="../../static/login/psw.png" mode="aspectFit" class="tel_icon"></image>
+			<input type="password" :value="psw" placeholder-style=" color:#fff" placeholder="请输入密码" class="input" @input="inputPsw" />
+			<image src="../../static/login/clear.png" mode="aspectFill" class="close" @click="clearPsw"></image>
+		</view>
+		<view style="width: 610rpx;background-color: #fff;height: 1rpx;z-index: 10;margin-top: 20rpx;"></view>
+		<view class="remember flex_r_s" @tap='remember'>
+			<image style="width: 23rpx;height: 23rpx;" :src="isRemeber?'../../static/login/selected.png':'../../static/login/unselected.png'"
+			 mode="aspectFill"></image>
+			<view style="font-size: 22rpx;color: #fff; margin-left: 8rpx;z-index: 10;">记住密码</view>
+		</view>
+		<view class='login flex_c_c' @tap="login">
+			<view>登录</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	// 用户名
+	let username = ''
+	// 密码
+	let psw = ''
+	import request from '../../util/request.js'
+	import util from '../../util/util.js'
+	import {
+		DEBUG
+	} from '../../util/config.js'
+	let app = getApp()
+	let cidInfo = ''
+	export default {
+		data() {
+			return {
+				username,
+				psw,
+				isRemeber: 0,
+				isShowColor: 0
+			}
+		},
+		onReady() {
+			let self = this
+			//#ifdef APP-PLUS 
+			cidInfo = plus.push.getClientInfo();
+			DEBUG && console.log('cid信息', cidInfo);
+			//#endif 
+			try {
+				const value = uni.getStorageSync('USER');
+				console.log('用户信息', value);
+				if (value) {
+					self.isRemeber = value.remember
+					username = value.username
+					psw = value.password
+					self.login()
+				}
+			} catch (e) {
+				// error
+			}
+		},
+		onLoad() {
+			// util.showModal('最新版本')
+		},
+		onShow() {},
+		methods: {
+			// 记住密码
+			remember() {
+				this.isRemeber = !this.isRemeber
+			},
+			// 输入用户名
+			inputName(e) {
+				// console.log(e.detail.value)
+				username = e.detail.value
+				this.username = username
+			},
+			// 输入密码
+			inputPsw(e) {
+				psw = e.detail.value
+				this.psw = psw
+			},
+			// 清空用户名
+			clear() {
+				if (username) {
+					username = ''
+					this.username = username
+				}
+			},
+			// 清空密码
+			clearPsw() {
+				if (psw) {
+					psw = ''
+					this.psw = psw
+				}
+			},
+			// 登录
+			async login() {
+				// util.showModal(JSON.stringify(cidInfo))
+				if (!username) {
+					util.showModal('用户名不能为空')
+					return
+				}
+				if (!psw) {
+					util.showModal('密码不能为空')
+					return
+				}
+				DEBUG && console.log('登录参数', username, psw, app.globalData.cidInfo);
+				let res = await request.post(request.PUBLIC.LOGIN, {
+					userName: username,
+					password: psw,
+					cidInfo: JSON.stringify(cidInfo)
+				})
+				DEBUG && console.log('登录结果', res.data)
+				if (res.data.statusCode == 200) {
+					// 保存本次登录token
+					request.TOKEN = res.data.token
+					// 跳转首页
+					util.redirect('/pages/index/index')
+					getApp().globalData.isLogin = true
+					// 用户信息保存到全局
+					getApp().globalData.userInfo = res.data
+					// 如果记住密码则保存账号到本地
+					if (this.isRemeber) {
+						uni.setStorage({
+							key: 'USER',
+							data: {
+								username: username,
+								password: psw,
+								remember: 1
+							}
+						});
+					}
+				} else {
+					util.showModal(res.data.errmsg)
+				}
+			}
+		}
+	}
+</script>
+
+<style>
+	.logo {
+		margin-top: 169rpx;
+		width: 247rpx;
+		height: 89rpx;
+		/* border: 1rpx solid red; */
+	}
+
+	.title {
+		margin-top: 116rpx;
+		font-size: 40rpx;
+		color: #FFFEFE;
+		z-index: 10;
+		/* border: 1rpx solid red; */
+	}
+
+	.content {
+		width: 100%;
+		/* border: 1rpx solid red; */
+	}
+
+	.tel {
+		width: 610rpx;
+		min-height: 48rpx;
+		margin-top: 125rpx;
+		/* border: 1rpx solid red; */
+		z-index: 20;
+	}
+
+	.tel_icon {
+		width: 30rpx;
+		height: 42rpx;
+		/* border: 1rpx solid red; */
+	}
+
+	.input {
+		width: 403rpx;
+		height: 48rpx;
+		color: #fff;
+		line-height: 28rpx;
+		font-size: 28rpx;
+		/* border: 1rpx solid red; */
+	}
+
+	.close {
+		width: 30rpx;
+		height: 30rpx;
+		/* border: 1rpx solid red; */
+	}
+
+	.send-code {
+		width: 152rpx;
+		height: 62rpx;
+		border-radius: 10rpx;
+		font-size: 20rpx;
+		line-height: 62rpx;
+		text-align: center;
+		border: 1rpx solid #C8C7CC;
+	}
+
+	.agreement {
+		width: 610rpx;
+		margin-top: 54rpx;
+		font-size: 15rpx;
+	}
+
+	.login {
+		position: relative;
+		width: 463rpx;
+		height: 66rpx;
+		/* border-radius: 10rpx; */
+		background-color: #fff;
+		text-align: center;
+		color: #1E90FF;
+		line-height: 66rpx;
+		font-size: 31rpx;
+		font-weight: bold;
+		margin-top: 143rpx;
+		z-index: 10;
+		border-radius: 100rpx;
+	}
+
+	.login:active {
+		background-color: #1E90FF;
+		color: #fff;
+	}
+
+	.register {
+		font-size: 15rpx;
+		margin-top: 30rpx;
+	}
+
+	.wx-icon {
+		width: 50rpx;
+		height: 50rpx;
+		/* border: 1rpx solid red; */
+	}
+
+	.remember {
+		width: 615rpx;
+		margin-top: 40rpx;
+	}
+</style>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>视频播放</title>
+	</head>
+	<body style="text-align: center;">
+	</body>
+	<script type="text/javascript">
+		//取url中的参数值
+		function getQuery(name) {
+			// 正则：[找寻'&' + 'url参数名字' = '值' + '&']（'&'可以不存在）
+			let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+			let r = window.location.search.substr(1).match(reg);
+			if (r != null) {
+				// 对参数值进行解码
+				return decodeURIComponent(r[2]);
+			}
+			return null;
+		}
+		let url = getQuery('url')
+		if (url) {
+			var x = document.createElement("video");
+			x.setAttribute("id", "myVideo");
+			x.setAttribute("width", "320");
+			x.setAttribute("height", "240");
+			x.setAttribute("controls", "controls");
+			x.setAttribute("autoplay", "autoplay");
+			// x.setAttribute("codecs", "hevc");
+			x.setAttribute("src", url);
+			document.body.appendChild(x);
+		}
+		//console.log(getQuery('url')); //获取 uni-app 传来的值
+	</script>
+</html>

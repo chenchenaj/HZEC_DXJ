@@ -1,0 +1,224 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/login/login",
+			"style": {
+				"app-plus": {
+					"titleNView": false //禁用原生导航栏
+				}
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"app-plus": {
+					"titleNView": false //禁用原生导航栏
+				}
+			}
+		},
+		{
+			"path": "pages/spot_check/spot_check",
+			"style": {
+				"navigationBarTitleText": "点巡检"
+			}
+		},
+		{
+			"path": "pages/system_choose/system_choose",
+			"style": {
+				"navigationBarTitleText": "系统"
+			}
+		},
+		{
+			"path": "pages/device_choose/device_choose",
+			"style": {
+				"navigationBarTitleText": "设备"
+			}
+		},
+		{
+			"path": "pages/element_choose/element_choose",
+			"style": {
+				"navigationBarTitleText": "项目"
+			}
+		},
+		{
+			"path": "pages/element_detail/element_detail",
+			"style": {
+				"navigationBarTitleText": "项目详情"
+			}
+		},
+		{
+			"path": "pages/maintain/maintain",
+			"style": {
+				"navigationBarTitleText": "保养"
+			}
+		},
+		{
+			"path": "pages/mine/mine",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/user_detail/user_detail",
+			"style": {
+				"navigationBarTitleText": "个人信息"
+			}
+		},
+		{
+			"path": "pages/message/message",
+			"style": {
+				"navigationBarTitleText": "消息"
+			}
+		},
+		{
+			"path": "pages/task/task",
+			"style": {
+				"navigationBarTitleText": "任务"
+			}
+		},
+		{
+			"path": "pages/verify/verify",
+			"style": {
+				"navigationBarTitleText": "审核"
+			}
+		},
+		{
+			"path": "pages/change/change",
+			"style": {
+				"navigationBarTitleText": "交接班"
+			}
+		},
+		{
+			"path": "pages/change_record/change_record",
+			"style": {
+				"navigationBarTitleText": "交接班记录"
+			}
+		},
+		{
+			"path": "pages/change_record_detail/change_record_detail",
+			"style": {
+				"navigationBarTitleText": "交接班详情"
+			}
+		},
+		{
+			"path": "pages/check_verify/check_verify",
+			"style": {
+				"navigationBarTitleText": "点巡检"
+			}
+		},
+		{
+			"path": "pages/user_choose/user_choose",
+			"style": {
+				"navigationBarTitleText": "人员选择"
+			}
+		},
+		{
+			"path": "pages/maintain_verify/maintain_verify",
+			"style": {
+				"navigationBarTitleText": "保养"
+			}
+		},
+		{
+			"path": "pages/danger/danger",
+			"style": {
+				"navigationBarTitleText": "隐患"
+			}
+		},
+		{
+			"path": "pages/danger_detail/danger_detail",
+			"style": {
+				"navigationBarTitleText": "隐患"
+			}
+		},
+		{
+			"path": "pages/repair/repair",
+			"style": {
+				"navigationBarTitleText": "维修"
+			}
+		},
+		{
+			"path": "pages/repair_verify/repair_verify",
+			"style": {
+				"navigationBarTitleText": "维修"
+			}
+		},
+		{
+			"path": "pages/record_search/record_search",
+			"style": {
+				"navigationBarTitleText": "记录查询"
+			}
+		},
+		{
+			"path": "pages/verify_detail/verify_detail",
+			"style": {
+				"navigationBarTitleText": "审批详情"
+			}
+		},
+		{
+			"path": "pages/safe_envir/safe_envir",
+			"style": {
+				"navigationBarTitleText": "安全环保"
+			}
+		},
+		{
+			"path": "pages/safe_create/safe_create",
+			"style": {
+				"navigationBarTitleText": "安全环保"
+			}
+		},
+		{
+			"path": "pages/safe_verify/safe_verify",
+			"style": {
+				"navigationBarTitleText": "安全环保"
+			}
+		},
+		{
+			"path": "pages/safe_list/safe_list",
+			"style": {
+				"navigationBarTitleText": "安全环保"
+			}
+		},
+		{
+			"path": "pages/overhaul/overhaul",
+			"style": {
+				"navigationBarTitleText": "大修列表"
+			}
+		},
+		{
+			"path": "pages/overhaul_verify/overhaul_verify",
+			"style": {
+				"navigationBarTitleText": "大修详情"
+			}
+		},
+		{
+			"path": "pages/overhaul_repair/overhaul_repair",
+			"style": {
+				"navigationBarTitleText": "维修" //大修
+			}
+		},
+		{
+			"path": "pages/task_create/task_create",
+			"style": {
+				"navigationBarTitleText": "我创建的任务"
+			}
+		},
+		{
+			"path": "pages/spot_check_repair/spot_check_repair",
+			"style": {
+				"navigationBarTitleText": "维修"
+			}
+		},
+		{
+			"path": "pages/video_play/video_play",
+			"style": {
+				"navigationBarTitleText": "视频"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "",
+		"navigationBarBackgroundColor": "#5786F7",
+		"backgroundColor": "#F8F8F8"
+	}
+}

@@ -1,0 +1,83 @@
+<script>
+	import commons from './util/commons.js'
+	import util from './util/util.js'
+	export default {
+		onLaunch: function() {
+			// console.log('App Launch')
+			let self = this
+			uni.getSystemInfo({
+				success(res) {
+					// console.log(res);
+					let px2rpx = 750 / res.windowWidth
+					self.globalData.windowTop = px2rpx * 44
+					self.globalData.platform = res.platform
+				}
+			});
+			commons.getSetting(self)
+			//#ifdef APP-PLUS  
+			// console.log(JSON.stringify(info));
+			/* 5+  push 消息推送 ps:使用:H5+的方式监听，实现推送*/
+			plus.push.addEventListener("click", function(msg) {
+				console.log("click:" + JSON.stringify(msg));
+				console.log(msg.payload);
+				//这里可以写跳转业务代码
+			}, false);
+			// 监听在线消息事件    
+			plus.push.addEventListener("receive", function(msg) {
+				//这里可以写跳转业务代码
+				console.log("recevice:" + JSON.stringify(msg))
+				if (self.globalData.isLogin && msg.payload) {
+					util.showModal('有新的通知消息,是否前往', () => {
+						util.navigate(msg.payload)
+					}, true)
+				}
+			}, false);
+			// 监听网络状态变化
+			uni.onNetworkStatusChange(function(res) {
+				if (res.isConnected) {
+					console.log('网络已经连接');
+					commons.readOffline(self)
+				} else {
+					console.log('网络已经断开');
+				}
+			});
+			//#endif 
+		},
+		onShow: function() {
+			let self = this
+			// console.log('App Show')
+			setTimeout(() => {
+				// #ifdef APP-PLUS 
+				plus.navigator.closeSplashscreen()
+				// #endif
+			}, 2000)
+		},
+		onHide: function() {
+			// console.log('App Hide')
+		},
+		globalData: {
+			isSpotCheckRepair: 0, //是否是点巡检维修
+			detailInfo: '', //存储详情用于修改任务
+			platform: '', //平台
+			isRemeber: false,
+			isLogin: false,
+			cidInfo: '',
+			setting: {},
+			userInfo: {},
+			windowTop: null,
+			deviceInfo: {}, //选择的项目
+			submitDeviceInfo: [], //最终提交的项目格式
+			isPoint: 1, //选择项目的时候类型 1点检，0巡检
+			childDeviceDetail: {}, //子设备详情
+			userChoseInfo: {}, //各类别选择人员信息
+			verifyInfo: {}, //提交的审核信息
+			offlineInfo: null, //离线的上传信息
+			overhaulInfo: {} //大修信息
+		}
+	}
+</script>
+
+<style>
+	/*每个页面公共css */
+	@import url('./global.css');
+</style>

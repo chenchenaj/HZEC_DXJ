@@ -1,0 +1,662 @@
+<template>
+	<view class="container">
+		<!-- 顶部导航 -->
+		<view class="top-title flex_r_b_e " :style="{height:windowTop+'rpx'}">
+			<view class='mine flex_c_c ' @click="toMine">
+				<image class='mine-icon' src="../../static/index/mine.png" mode="aspectFit"></image>
+			</view>
+			<text style="font-weight: bold;margin-bottom: 20rpx;">点巡检系统</text>
+			<view class="login-out" @click="loginout">退出</text></view>
+		</view>
+		<!-- 顶部图片 -->
+		<image class='top-image' :style="{'margin-top':windowTop+'rpx'}" src="../../static/index/top.png"
+			mode="aspectFill"></image>
+		<!-- 消息轮播 -->
+		<view class="message-swiper flex_r_b" @click="toMessageList">
+			<view class="flex_r_s">
+				<image style="width:29rpx;height:25rpx;margin-right: 15rpx;" src="../../static/index/message.png"
+					mode="aspectFill"></image>
+				<swiper v-if="messageList[0]" class='swiper' :autoplay="true" :circular="true" :vertical='true'
+					:interval="3000" :duration="1000">
+					<swiper-item v-for="(item,index) in messageList" :key='index'>
+						<view class="swiper-item line1">{{item.title}}</view>
+					</swiper-item>
+				</swiper>
+				<view v-else class='swiper'>
+					<view class="swiper-item line1">
+						暂无未读消息
+					</view>
+				</view>
+			</view>
+			<view class="flex_r_s">
+				<view v-if="messageList[0]" class="message-num"><text
+						style="margin: 0 5rpx;">{{messageList.length>99?'99+':messageList.length}}</text></view>
+				<image class='right-arrow' src="../../static/index/right.png" mode="aspectFit"></image>
+			</view>
+		</view>
+		<!-- 中部菜单 -->
+		<view class="menu flex_row_start">
+			<view class='menu-item flex_c_b' v-for="(item,index) in menuList" :key="item.name"
+				:style="{'margin-right':(index+1)%5==0?'':'10rpx','margin-bottom':(index+1)%6==0?'10rpx':''}"
+				@click='navTo(index)'>
+				<image class='menu-icon' :src="item.img" mode="aspectFit"></image>
+				<view class='menu-name'>{{item.name}}</view>
+			</view>
+		</view>
+		<!-- 记录 -->
+		<view class="record-type flex_r_c">
+			<!-- 类别选择 -->
+			<view class='type-item flex_c_c' v-for="(item,index) in typeList" :key="item"
+				:style="{color:index==typeIdx?'#5786F7':'', 'margin-right':index==0?'150rpx':'','border-bottom':typeIdx==index?'3rpx solid #5786F7':''}"
+				@click="typeSelect(index)">
+				<view>{{item}}<text v-if="index==0&&count1>0" style="font-size: 22rpx;color: red;">({{count1}})</text>
+					<text v-if="index==1&&count2>0" style="font-size: 22rpx;color: red;">({{count2}})</text>
+				</view>
+			</view>
+		</view>
+		<view v-if="typeIdx==0" class="tab flex_r_b">
+			<view class="tab-item" v-for="(item,index) in typeList1" :key='index'
+				:style="{'border-bottom':typeIdx1==index?'2rpx solid #5786F7':'',color:typeIdx1==index?'#5786F7':''}"
+				@click='changeType(index)'>{{item}}<text v-if="num[index]&&num[index]>0"
+					style="font-size: 22rpx;color: red;">({{num[index]}})</text></view>
+		</view>
+		<view v-if="typeIdx==1" class="tab flex_r_b">
+			<view class="tab-item1" v-for="(item,index) in typeList2" :key='index'
+				:style="{'border-bottom':typeIdx2==index?'2rpx solid #5786F7':'',color:typeIdx2==index?'#5786F7':''}"
+				@click='changeType2(index)'>{{item}}<text v-if="num1[index]&&num1[index]>0"
+					style="font-size: 22rpx;color: red;">({{num1[index]}})</text></view>
+		</view>
+		<!-- 类别内容 -->
+		<scroll-view scroll-y="true" class='type-content'>
+			<view class='flex_c_c' style="width: 100%;">
+				<view v-if="contentList[0]" class='type-content-item flex_r_b' v-for="(item,index) in contentList"
+					:key="index" @click="toDetail(item.id,item.uid,index)"
+					:style="{'margin-bottom':index==contentList.length-1?'40rpx':''}">
+					<view class=" flex_c_b" style="margin-left: 19rpx; width: 600rpx;padding:20rpx 0;font-size: 27rpx;">
+						<view class="line1" style="width: 100%;height: 35rpx;"
+							:style="{color:item.isDone?'green':'red'}">环节名称：{{item.title}}</view>
+						<view v-if="typeIdx==0||(typeIdx==1&&!item.result)" class="line1"
+							style="width: 100%;height: 35rpx;">
+							优先级：{{(item.priority==0&&'正常')||(item.priority==1&&'重要')||(item.priority==2&&'紧急重要')}}
+						</view>
+						<view
+							v-if="typeIdx==1&&typeIdx2==2&&item.isDone&&(item.taskResult||item.taskResult===0)&&(item.taskType===0 || item.taskType === 1)"
+							class="line1" style="width: 100%;height: 35rpx;color: rgb(87, 134, 247);">
+							执行结果：{{resultOptions2[item.taskResult]}}</view>
+						<view
+							v-if="typeIdx==1&&typeIdx2==2&&item.isDone&&(item.taskResult||item.taskResult===0)&&item.taskType===2"
+							class="line1" style="width: 100%;height: 35rpx;color: rgb(87, 134, 247);">
+							执行结果：{{resultOptions[item.taskResult]}}</view>
+						<view v-if="typeIdx==1&&item.result" class="line1"
+							style="color: red; width: 100%;height: 35rpx;" :style="{color:item.isDone?'green':'red'}">
+							审批结果：{{item.result||'审核中'}}</view>
+						<view class="line1" style="width: 100%;height: 35rpx;">创建时间：{{item.createdTime}}</view>
+					</view>
+					<image style="width: 13rpx;height: 26rpx;margin-right: 32rpx;" src="../../static/index/right.png"
+						mode="aspectFill"></image>
+				</view>
+				<view v-if="hasNextPage" class="loading" @click="loadMore">加载更多</view>
+				<view v-if="!contentList||!contentList[0]" style="font-size: 32rpx;">暂无数据</view>
+			</view>
+		</scroll-view>
+	</view>
+</template>
+
+<script>
+	import commons from '../../util/commons.js'
+	import util from '../../util/util.js'
+	import request from '../../util/request.js'
+	import {
+		DEBUG
+	} from '../../util/config.js'
+	let app = getApp()
+	let verify = ['执行', '暂缓', '忽略', '大修处理', '无法确定']
+	let verifyRepair = ['同意', '不同意']
+	// 菜单图标,名称,跳转页面
+	let menuList = [{
+			id: 'checkPoint_inspection',
+			img: '../../static/index/tab_01.png',
+			name: '点巡检',
+			toPage: '/pages/spot_check/spot_check'
+		},
+		{
+			id: 'repair',
+			img: '../../static/index/tab_02.png',
+			name: '维修',
+			toPage: '/pages/repair/repair'
+		},
+		{
+			id: 'maintenance',
+			img: '../../static/index/tab_03.png',
+			name: '保养',
+			toPage: '/pages/maintain/maintain?isMaintain=1'
+		}, {
+			id: 'danger',
+			img: '../../static/index/tab_04.png',
+			name: '隐患',
+			toPage: '/pages/danger/danger'
+		},
+		{
+			id: 'lubricating',
+			img: '../../static/index/tab_05.png',
+			name: '润滑',
+			toPage: '/pages/maintain/maintain'
+		},
+		{
+			id: 'handover',
+			img: '../../static/index/tab_06.png',
+			name: '交接班',
+			toPage: '/pages/change/change'
+		},
+		{
+			id: 'record',
+			img: '../../static/index/tab_07.png',
+			name: '记录查询',
+			toPage: '/pages/record_search/record_search'
+		},
+		{
+			id: 'spprove',
+			img: '../../static/index/tab_08.png',
+			name: '审批',
+			toPage: '/pages/verify/verify'
+		},
+		{
+			id: 'safeProtection',
+			img: '../../static/index/tab_09.png',
+			name: '安全环保',
+			toPage: '/pages/safe_create/safe_create'
+		},
+		{
+			id: 'changeRecord',
+			img: '../../static/mine/change.png',
+			name: '交接班记录',
+			toPage: '/pages/change_record/change_record'
+		}
+	]
+	let page = 0
+	let limit = 10
+	let hasNextPage = false
+	let timer
+	// 几毫秒刷新一次
+	let step = 10000
+	let self
+	export default {
+		data() {
+			return {
+				typeList1: ['点检', '巡检', '维修', '保养', '润滑', '隐患'],
+				typeList2: ['我发起的', '我的审核', '抄送我的'],
+				resultOptions: {
+					0: '已完成',
+					1: '未完成',
+					2: '无法执行'
+				},
+				resultOptions2: {
+					0: '正常',
+					1: '自行解决',
+					2: '未解决,提交求助'
+				},
+				num: [],
+				num1: [],
+				// 选择的子类别
+				typeIdx1: 0,
+				typeIdx2: 0,
+				count1: 0,
+				count2: 0,
+				hasNextPage,
+				title: 'Hello',
+				windowTop: 88,
+				menuList,
+				// 类别
+				typeList: ['任务', '审批'],
+				// 选择的类别
+				typeIdx: 0,
+				contentList: [],
+				messageList: [],
+				result: ''
+			}
+		},
+		onLoad() {
+			self = this
+			commons.readOffline(app)
+			this.windowTop = app.globalData.windowTop + 50
+		},
+		onUnload() {
+			if (timer) {
+				console.log(123);
+				clearInterval(timer)
+			}
+		},
+		onHide() {
+			if (timer) {
+				console.log(123);
+				clearInterval(timer)
+			}
+		},
+		onShow() {
+			console.log(timer)
+			if (timer) {
+				clearInterval(timer)
+			}
+			if (!app.globalData.setting.PERIODUNIT) {
+				commons.getSetting(app)
+			}
+			page = 0
+			this.getMyTaskCount()
+			this.getVerifyCount()
+			if (this.typeIdx == 0) {
+				this.getMyTask()
+			} else {
+				this.getVerifyList()
+			}
+			this.getMessageList()
+			timer = setInterval(() => {
+				page = 0
+				self.getMyTaskCount()
+				self.getVerifyCount()
+				if (self.typeIdx == 0) {
+					self.getMyTask()
+				} else {
+					self.getVerifyList()
+				}
+				self.getMessageList()
+				// setTimeout(()=>{
+				// // 设置角标数量
+				// plus.runtime.setBadgeNumber(self.count1+self.count2)	
+				// },2000)
+			}, step)
+		},
+		methods: {
+			toMessageList() {
+				// if (this.messageList[0]) {
+				// 	util.navigate('/pages/message/message')
+				// }
+				util.navigate('/pages/message/message')
+			},
+			async loginout() {
+				DEBUG && console.log('退出登录');
+				// let res = await request.get(request.USER.LOGIN_OUT)
+				// DEBUG && console.log(res.data);
+				uni.removeStorage({
+					key: 'USER',
+					complete: function(res) {
+						uni.reLaunch({
+							url: '/pages/login/login'
+						})
+					}
+				});
+			},
+			// 加载更多
+			loadMore() {
+				if (hasNextPage) {
+					page += 1
+					if (this.typeIdx == 0) {
+						this.getMyTask()
+					} else {
+						this.getVerifyList()
+					}
+				}
+			},
+			// 类别切换
+			changeType(idx) {
+				if (this.typeIdx1 != idx) {
+					page = 0
+					this.typeIdx1 = idx
+					this.getMyTask()
+					this.getMyTaskCount()
+				}
+			},
+			// 审批类别切换
+			changeType2(idx) {
+				if (this.typeIdx2 != idx) {
+					page = 0
+					this.typeIdx2 = idx
+					this.getVerifyList()
+				}
+			},
+			// 任务详情 0,1点巡检;2,3维修;4,5保养,润滑;6隐患
+			toDetail(id, uid, idx) {
+				if (this.typeIdx == 0) {
+					// DEBUG && console.log('跳转详情', id, uid, idx);
+					if (this.contentList[idx].type < 2) {
+						util.navigate('/pages/check_verify/check_verify', {
+							id,
+							uid
+						})
+					} else if (this.contentList[idx].type < 4) {
+						util.navigate('/pages/repair_verify/repair_verify', {
+							id,
+							uid
+						})
+					} else if (this.contentList[idx].type == 4 || this.contentList[idx].type == 5) {
+						util.navigate('/pages/maintain_verify/maintain_verify', {
+							id,
+							uid,
+							isMaintain: this.contentList[idx].type == 4 ? 1 : 0
+						})
+					} else if (this.contentList[idx].type == 6) {
+						/* util.navigate('/pages/danger_detail/danger_detail', {
+							id,
+							uid
+						}) */
+						util.navigate('/pages/verify_detail/verify_detail', {
+							id,
+							uid
+						})
+					}
+				} else {
+					let data = this.contentList[idx]
+					// 如果是任务则跳转任务详情
+					if (data.isTask) {
+						let navigateQuery = {
+							id: data.id,
+							uid: data.uid,
+							checkId: data.checkId
+						}
+						if (this.typeIdx === 1 && this.typeIdx2 === 2) {
+							navigateQuery.isCC = this.typeIdx2
+						}
+						if (data.type < 2) {
+							util.navigate('/pages/check_verify/check_verify', navigateQuery)
+						} else if (data.type < 4) {
+							util.navigate('/pages/repair_verify/repair_verify', navigateQuery)
+						} else if (data.type == 4 || data.type == 5) {
+							util.navigate('/pages/maintain_verify/maintain_verify', navigateQuery)
+						} else if (data.type == 6) {
+							util.navigate('/pages/verify_detail/verify_detail', navigateQuery)
+						}
+					} else {
+						util.navigate('/pages/verify_detail/verify_detail', {
+							id: data.id
+						})
+					}
+				}
+			},
+			// 跳转至我的页面
+			toMine() {
+				util.navigate('/pages/mine/mine')
+			},
+			// 菜单跳转事件
+			navTo(index) {
+				// console.log(menuList[index].toPage, app.globalData.userInfo.auth);
+				if (menuList[index].toPage && (app.globalData.userInfo.auth[menuList[index].id] || menuList[index].id ==
+						"changeRecord")) {
+					util.navigate(menuList[index].toPage)
+				} else {
+					util.showTips('您没有该权限', 4)
+				}
+			},
+			// 记录的类别选择
+			typeSelect(index) {
+				if (index != this.typeIdx) {
+					this.contentList = []
+					this.typeIdx = index
+					page = 0
+					if (index == 0) {
+						this.getMyTaskCount()
+						this.getMyTask()
+					} else {
+						this.getVerifyList()
+					}
+				}
+			},
+			// 获取任务列表数量
+			async getMyTaskCount() {
+				let res = await request.get(request.USER.TASK_COUNT)
+				DEBUG && console.log('任务数量', res.data);
+				if (res.data.statusCode == 200) {
+					this.num = res.data.count
+					this.count1 = res.data.count.reduce((total, num) => {
+						return total + num
+					})
+					plus.runtime.setBadgeNumber(self.count1 + self.count2)
+				} else {
+					util.showModal(res.data.errmsg)
+				}
+			},
+			// 获取审批列表数量
+			async getVerifyCount() {
+				let res = await request.get(request.USER.AUDIT_NUM)
+				DEBUG && console.log('任务数量', res.data);
+				if (res.data.statusCode == 200) {
+					this.count2 = res.data.list.reduce((total, num) => {
+						return total + num
+					})
+					this.num1 = res.data.list
+					plus.runtime.setBadgeNumber(self.count1 + self.count2)
+				} else {
+					util.showModal(res.data.errmsg)
+				}
+			},
+			// 获取任务
+			async getMyTask() {
+				let type = this.typeIdx1
+				if (type > 2) {
+					type += 1
+				}
+				let res = await request.get(request.USER.MY_TASK, {
+					page,
+					limit,
+					type
+				})
+				DEBUG && console.log('任务列表', res.data);
+				if (res.data.statusCode == 200) {
+					hasNextPage = res.data.list.length >= limit
+					this.hasNextPage = hasNextPage
+					if (page == 0) {
+						this.contentList = res.data.list
+					} else {
+						this.contentList.push(...res.data.list)
+					}
+				} else {
+					util.showModal(res.data.errmsg)
+				}
+			},
+			// 审批列表
+			async getVerifyList() {
+				// DEBUG && console.log('审批参数', page, limit, this.typeIdx);
+				let res = await request.get(request.USER.VERIFY_LIST, {
+					page,
+					limit,
+					type: this.typeIdx2
+				})
+				DEBUG && console.log('审批列表', res.data);
+				if (res.data.statusCode == 200) {
+					hasNextPage = res.data.list.length >= limit
+					this.hasNextPage = hasNextPage
+					res.data.list.forEach((item) => {
+						if (item.result.length == 0) {
+							item.result = ''
+						} else {
+							item.result = item.result.map(itm => {
+								if (item.taskType == 2) {
+									// console.log(22222);
+									return verifyRepair[itm]
+								} else {
+									// console.log(3333,item.tasktype);
+									return verify[itm]
+								}
+							}).join('->')
+						}
+					})
+					if (page == 0) {
+						this.contentList = res.data.list
+					} else {
+						this.contentList.push(...res.data.list)
+					}
+				} else {
+					util.showModal(res.data.errmsg)
+				}
+			},
+			// 消息列表
+			async getMessageList() {
+				let res = await request.get(request.USER.MESSAGE, {
+					page: 0,
+					limit: 500,
+				})
+				DEBUG && console.log('消息列表', res.data);
+				if (res.data.statusCode == 200) {
+					this.messageList = res.data.list
+				} else {
+					util.showModal(res.data.errmsg)
+				}
+			}
+		}
+	}
+</script>
+
+<style scoped>
+	.tab-item {
+		width: 120rpx;
+		line-height: 45rpx;
+		font-size: 27rpx;
+		text-align: center;
+	}
+
+	.tab-item1 {
+		width: 248rpx;
+		line-height: 92rpx;
+		font-size: 27rpx;
+		text-align: center;
+	}
+
+	.active {
+		color: #000;
+	}
+
+	/* 
+	.top-title {
+		position: relative;
+		width: 100%;
+		height: 88rpx;
+		font-size: 30rpx;
+		color: #FFFFFF;
+		background-color: #5786F7;
+	} */
+
+	.top-title {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 88rpx;
+		font-size: 30rpx;
+		color: #FFFFFF;
+		background-color: #5786F7;
+		z-index: 99;
+	}
+
+	.mine {
+		margin-bottom: 20rpx;
+		width: 38rpx;
+		margin-left: 50rpx;
+	}
+
+	.mine-icon {
+		width: 100%;
+		height: 43rpx;
+	}
+
+	.top-image {
+		width: 100%;
+		height: 200rpx;
+	}
+
+	.message-swiper {
+		width: 93%;
+		height: 70rpx;
+		border-bottom: 1rpx solid #E5E5E5;
+	}
+
+	.swiper {
+		width: 500rpx;
+		height: 35rpx;
+	}
+
+	.swiper-item {
+		width: 100%;
+		height: 35rpx;
+		line-height: 35rpx;
+		font-size: 20rpx;
+	}
+
+	.message-num {
+		min-width: 31rpx;
+		height: 31rpx;
+		border-radius: 30rpx;
+		font-size: 21rpx;
+		color: #fff;
+		margin-right: 29rpx;
+		background-color: #C90B0B;
+		line-height: 31rpx;
+		text-align: center;
+	}
+
+	.right-arrow {
+		width: 13rpx;
+		height: 25rpx;
+	}
+
+	.menu {
+		width: 670rpx;
+		min-height: 100rpx;
+	}
+
+	.menu-item {
+		width: 123rpx;
+		height: 100rpx;
+		margin-top: 10rpx;
+	}
+
+	.menu-icon {
+		width: 57rpx;
+		height: 54rpx;
+	}
+
+	.menu-name {
+		font-size: 18rpx;
+	}
+
+	.record-type {
+		width: 100%;
+		min-height: 100rpx;
+		border-top: 12rpx solid #E5E5E5;
+	}
+
+	.type-item {
+		width: 173rpx;
+		height: 50rpx;
+		color: #626262;
+		font-size: 27rpx;
+		font-weight: bold;
+	}
+
+	.type-content {
+		width: 100%;
+		height: 1000rpx;
+	}
+
+	.type-content-item {
+		width: 697rpx;
+		background: rgba(255, 255, 255, 1);
+		box-shadow: 0px 1rpx 27rpx 0px rgba(0, 0, 0, 0.09);
+		border-radius: 20rpx;
+		margin-top: 15rpx;
+	}
+
+	.loading {
+		width: 300rpx;
+		height: 50rpx;
+		line-height: 53rpx;
+		color: #fff;
+		text-align: center;
+		background-color: #5786F7;
+		font-size: 27rpx;
+		margin-bottom: 20rpx;
+	}
+
+	.login-out {
+		margin-bottom: 20rpx;
+		margin-right: 50rpx;
+		/* text-decoration: underline; */
+	}
+</style>

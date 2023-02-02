@@ -1,0 +1,302 @@
+page {
+	/* letter-spacing: 2rpx; */
+	font-family: 'Microsoft YaHei';
+}
+
+image {
+	display: block;
+	width: 0;
+	height: 0;
+}
+
+/* 视频删除 */
+.delete1 {
+	position: absolute;
+	right: -30rpx;
+	top: -30rpx;
+	width: 45rpx;
+	height: 45rpx;
+	z-index: 999;
+}
+
+/* 字符字母不强行换行 */
+.no_line_feed {
+	word-break: break-all;
+}
+
+.font-color {
+	color: #5786F7;
+}
+
+.un-font-color {
+	color: #626262;
+}
+
+.font-weight {
+	font-weight: bold;
+}
+
+.container {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+/* 自动水平浮动布局between */
+.flex_row {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+}
+
+/* 自动水平浮动布局 center */
+.flex_row_center {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+}
+
+/* 自动水平浮动布局 around */
+.flex_row_around {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-around;
+}
+
+/*  自动水平浮动布局 start */
+.flex_row_start {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: flex-start;
+}
+
+/* 高层级透明定位 */
+.full_abs_top {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	opacity: 0;
+	z-index: 99
+}
+
+/* 低层级不透明定位 */
+.full_abs_down {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	opacity: 1;
+	z-index: -1
+}
+
+/* 页面绝对定位fixed */
+.full_fix {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+}
+
+/* 透明度 */
+.transparent {
+	opacity: 0;
+}
+
+/* 边框 */
+.border {
+	border: 1rpx solid red;
+}
+
+/*flex 常用布局*/
+.flex_c_c {
+	display: flex;
+	flex-direction: column;
+	/* 当前方向 对齐方式 */
+	justify-content: center;
+	/* 另一方向 对齐方式 */
+	align-items: center;
+}
+
+.flex_c_c_s {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.flex_c_c_e {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-end;
+}
+
+.flex_c_s {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.flex_c_s_s {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+}
+
+.flex_c_a {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.flex_c_b {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.flex_c_e {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.flex_c_b_s {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+.flex_c_b_e {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+.flex_c_a_s {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: flex-start;
+}
+
+.flex_r_c {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+.flex_r_e {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.flex_r_s {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.flex_r_s_s {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: flex-start;
+}
+
+.flex_r_b {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.flex_r_b_s {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+.flex_r_b_e {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+.flex_r_s_e {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: flex-end;
+}
+
+.flex_r_a {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.flex_r_e {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.page_img {
+	width: 100%;
+	height: 100%;
+}
+
+/* text */
+/* 1行文本溢出省略 */
+.line1 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 2行文本溢出省略 */
+.line2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: box;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+/* 3行文本溢出省略 */
+.line3 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: box;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+}
+
+/* 阴影 */
+.nshadow {
+	box-shadow: 0rpx 0rpx 20rpx rgba(0, 0, 0, 0.25);
+}
